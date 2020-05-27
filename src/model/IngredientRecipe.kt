@@ -1,3 +1,4 @@
 package model
 
-class IngredientRecipe(description: String, mesure: String, var quantity: Float): Ingredient(description, mesure)
+class IngredientRecipe(ingredient: Ingredient, var quantity: Float):
+        Ingredient(ingredient.description, ingredient.measure)

@@ -1,6 +1,6 @@
 package model
 
-abstract class Category(val name: String): ICategoryOperations {
+abstract class Category(val name: String) {
 
     protected val ingredients: ArrayList<Ingredient> = ArrayList<Ingredient>()
 
@@ -11,10 +11,6 @@ abstract class Category(val name: String): ICategoryOperations {
         }
         result += "${ingredients.size + 1}) Regresar al menú anterior."
         return result
-    }
-
-    override fun getIngredient(idx: Int): Ingredient {
-        return ingredients[idx]
     }
 
 }
