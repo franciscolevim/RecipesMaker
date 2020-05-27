@@ -1,51 +1,58 @@
+import model.*
+import java.util.*
+
 fun main(args: Array<String>) {
+
+    println(":::: Bienvenido a Recipe Marker ::::")
     val menu = """
-        :: Bienvenido a Recipe Marker ::
         
-        Selecciona la opción deseada
-        
-            1. Crear una receta.
-            2. Ver mis recetas.
-            3. Salir.
+            [C]rear una receta.
+            [V]er mis recetas.
+            [S]alir.
             
     """.trimIndent()
 
     var input: String?
     do {
         println(menu)
-        print("Selección: ")
+        print("Selecciona una opción: ")
         input = readLine()
+        input = input?.toUpperCase()
         when(input) {
-            "1" -> {
-                viewRecipe("Crear una receta")
-                makeRecipe()
-            }
-            "2" -> viewRecipe("Ver mis recetas")
+            "C" -> makeRecipe()
+            "V" -> viewRecipe("Ver mis recetas")
         }
-    } while (input?.compareTo("3") ?: -1 != 0 )
+    } while (input?.compareTo("S") ?: -1 != 0 )
 
-    println("Hasta la vista baby")
+    println("\nHasta la vista baby")
 }
 
+val categories: Array<Category> = arrayOf(Water(), Milk(), Meat(), Vegetables(), Fruits(), Cereals(), Eggs(), Oils())
 
 fun makeRecipe() {
-    val menu = """
-        Selecciona por categoría el ingrediente que buscas
-        
-            1. Agua
-            2. leche
-            3. Carne
-            4. Verduras
-            5. Frutas
-            6. Cereal
-            7. Huevos
-            8. Aceites
-            
-    """.trimIndent()
-    println(menu)
+    println("\n:: Ingredientes\n")
+    var menu: String = ""
+    val exitOption = categories.size + 1
+    for (idx: Int in categories.indices) {
+        menu += "${idx + 1}) ${categories[idx].name}\n"
+    }
+    menu += "${categories.size + 1}) Regresar al menú anterior\n"
+    val reader = Scanner(System.`in`)
+    var option: Int = 0
+    do {
+        println(menu)
+        print("Selecciona una opción: ")
+        option = reader.nextInt()
+        when(option) {
+            in 1..categories.size -> selectIngrediente(categories[option - 1])
+        }
+    } while (option != exitOption)
 }
 
+fun selectIngrediente(category: Category) {
+    println("\n${category}\n")
+}
 
 fun viewRecipe(title: String) {
-    println(":.$title\n")
+    println(":: $title")
 }
