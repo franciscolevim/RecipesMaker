@@ -11,6 +11,7 @@ class Menu(title:String): Item(title) {
         }
         return """
             *${title}
+            *----------------------------------------------------
             *$itemsList
         """.trimMargin("*")
     }
