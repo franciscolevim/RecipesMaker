@@ -1,3 +1,7 @@
 package model
 
-open class Ingredient(val description: String, val measure: String)
+data class Ingredient(val name: String, var measure: String, var quantity: Float) {
+    override fun toString(): String {
+        return "$name: $quantity $measure"
+    }
+}
