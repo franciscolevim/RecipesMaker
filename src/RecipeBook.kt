@@ -1,16 +1,12 @@
 import model.Item
 import model.Menu
-import model.Recipe
 
 class RecipeBook(menu: Menu): RecipePanel(menu), IActions {
 
-    var actionKey:String? = ""
-    val recipies: ArrayList<Recipe> = ArrayList()
-
     init {
-        menu.items.put("1", Item("[C]rear"))
-        menu.items.put("2", Item("[V]er"))
-        menu.items.put("3", Item("[S]alir"))
+        menu.items.put("1", Item("[C]rear Receta"))
+        menu.items.put("2", Item("[V]er Recetas"))
+        menu.items.put("3", Item("c[E]rrar RecipeBook"))
     }
 
     override fun waitingForInstruction() {
@@ -19,19 +15,29 @@ class RecipeBook(menu: Menu): RecipePanel(menu), IActions {
             print("¿Qué deseas hacer? ")
             actionKey = readLine()?.toUpperCase() ?: ""
             when(actionKey) {
-                "C","V","S" -> break@waiting;
+                "C","V","E" -> break@waiting;
             }
         }
     }
 
     override fun executeAction() {
-        println("Acción: $actionKey")
+        when(actionKey) {
+            "C" -> println("Creashion")
+            "V" -> {
+                val viewer = RecipeViewer(Menu("Ver Recetas"))
+                viewer.run()
+                actionKey = viewer.getActionkey()
+            }
+        }
+        if ("E" == actionKey) {
+            println("Exit")
+        }
     }
 
     override fun run() {
         do {
             waitingForInstruction()
             executeAction()
-        } while(actionKey != "S")
+        } while(actionKey != "E")
     }
 }
