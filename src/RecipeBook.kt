@@ -1,5 +1,6 @@
 import model.Item
 import model.Menu
+import model.Recipe
 
 class RecipeBook(menu: Menu): RecipePanel(menu), IActions {
 
@@ -22,7 +23,24 @@ class RecipeBook(menu: Menu): RecipePanel(menu), IActions {
 
     override fun executeAction() {
         when(actionKey) {
-            "C" -> println("Creashion")
+            "C" -> {
+                var option:String = ""
+                waiting@ while (true) {
+                    print("¿Deseas generar una nueva receta? [S]í/[N]o: ")
+                    option = readLine()?.toUpperCase() ?: ""
+                    when(option) {
+                        "S" -> {
+                            val maker = RecipeMaker(Menu("Nueva Receta"))
+                            maker.run()
+                            break@waiting
+                        }
+                        "N" -> {
+                            println("Nel pastel")
+                            break@waiting
+                        }
+                    }
+                }
+            }
             "V" -> {
                 val viewer = RecipeViewer(Menu("Ver Recetas"))
                 viewer.run()

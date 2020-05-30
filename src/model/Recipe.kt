@@ -1,6 +1,6 @@
 package model
 
-class Recipe(val title: String) {
+class Recipe(var title: String) {
 
     val ingredients: ArrayList<Ingredient> = ArrayList()
     var instructions: String = ""
