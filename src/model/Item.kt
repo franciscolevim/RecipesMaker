@@ -1,7 +1,7 @@
 package model
 
-open class Item(val title:String) {
-    override fun toString(): String {
-        return title
-    }
+abstract class Container(val title:String, val parent:Container) {
+    var command:String = ""
+    abstract fun waitingForCommand()
+    abstract fun executeCommand()
 }
