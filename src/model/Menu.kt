@@ -3,6 +3,7 @@ package model
 class Menu(title:String): Item(title) {
 
     val items:HashMap<String, Item> = HashMap<String, Item>()
+    val options:ArrayList<String> = ArrayList()
 
     override fun toString(): String {
         var itemsList = ""
@@ -12,7 +13,7 @@ class Menu(title:String): Item(title) {
         return """
             *
             *:::: ${title}
-            *--------------------------------------------------
+            *___________________________________________________
             *$itemsList
         """.trimMargin("*")
     }
