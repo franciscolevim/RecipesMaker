@@ -1,49 +1,40 @@
 import model.Item
-import model.LabelMenu
 import model.Menu
 import model.Recipe
 
-class RecipeViewer(menu: Menu): RecipePanel(menu), IActions {
+class RecipeViewer(menu:Menu): Panel(menu), ICommands {
+    var recipes = ArrayList<Recipe>()
+    override var command:String = ""
 
-    private val recipesMenu:LabelMenu = LabelMenu("Recetas")
+    override fun display() {
+        do {
+            waitingForCommand()
+            executeCommand()
+        } while(command != "R")
+    }
 
-    init {
-        menu.items.put("1", Item("[L]istar"))
-        menu.items.put("2", Item("[R]egresar al menú principal"))
-        menu.items.put("3", Item("c[E]rrar RecipeBook"))
+    override fun waitingForCommand() {
+        do {
+            displayMenu()
+            print("¿Qué receta deseas ver? ")
+            command = readLine()?.toUpperCase() ?: ""
+        } while (!menu.options.contains(command))
+    }
 
+    override fun executeCommand() {
+        if (command != "R") {
+            println(recipes[command.toInt() - 1])
+            readLine()
+        }
+    }
+
+    private fun displayMenu() {
         for (idx in recipes.indices) {
-            recipesMenu.items.put("${idx + 1}", "${idx + 1}.- ${recipes[idx].title}")
+            menu.items["${idx + 1}"] = Item("${idx + 1}.- ${recipes[idx].title}")
+            menu.options.add("${idx + 1}")
         }
-    }
-
-    override fun waitingForInstruction() {
-        waiting@ while (true) {
-            println(menu)
-            print("¿Qué deseas hacer? ")
-            actionKey = readLine()?.toUpperCase() ?: ""
-            when(actionKey) {
-                "L","R","E" -> break@waiting;
-            }
-        }
-    }
-
-    override fun executeAction() {
-        println(recipesMenu)
-        print("¿Qué receta deseas ver?/Cerrar RecipeBook[E]/Regresar al menú principal[R]/" +
-                "Regresar al menú anterior[B]: ")
-        actionKey = readLine()?.toUpperCase() ?: ""
-    }
-
-    override fun run() {
-        runloop@ while (true) {
-            waitingForInstruction()
-            if ("L" == actionKey) {
-                executeAction()
-            }
-            when(actionKey) {
-                "E", "R" -> break@runloop
-            }
-        }
+        menu.items["${recipes.size + 1}"] = Item("[R]egresar al menú principal.")
+        menu.options.add("R")
+        println(menu)
     }
 }

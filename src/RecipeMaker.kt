@@ -1,51 +1,60 @@
 import model.*
 
-class RecipeMaker(menu:Menu): RecipePanel(menu), IActions {
+class RecipeMaker(menu:Menu): Panel(menu), ICommands {
 
-    private val recipe = Recipe("Nueva Receta")
-    private val menuPanels:HashMap<String, IngredientPanel> = HashMap()
+    val catalog:IngredientsCatalog = IngredientsCatalog(Menu("Ingredientes"))
+    var recipe:Recipe? = null
+    override var command:String = ""
 
     init {
-        menu.items["1"] = Item("[A]gua")
-        menu.items["2"] = Item("[L]eche")
-        menu.items["3"] = Item("[C]arne")
-        menu.items["4"] = Item("[V]erdura")
-        menu.items["5"] = Item("[F]rutas")
-        menu.items["6"] = Item("[CE]real")
-        menu.items["7"] = Item("[H]uevos")
-        menu.items["8"] = Item("[AC]eites")
-        menu.items["9"] = Item("[I]nstrucciones")
-
-        menuPanels["C"] =  MeatPanel(Menu("Carnes"))
-        menuPanels["V"] =  VegetablePanel(Menu("Verduras"))
-        menuPanels["F"] =  FruitPanel(Menu("Frutas"))
-        menuPanels["CE"] =  CerealPanel(Menu("Cereales"))
-        menuPanels["AC"] =  OilPanel(Menu("Aceites"))
+        menu.items["1"] = Item("[1] Agregar Ingrediente")
+        menu.items["2"] = Item("[2] Agregar Instrucciones")
+        menu.items["4"] = Item("[T]erminar")
+        menu.options.addAll(arrayListOf("1", "2", "T"))
     }
 
-    override fun waitingForInstruction() {
-        println(menu)
-        print("¿Qué deseas añadir a tu receta?/" +
-                "Cerrar RecipeBook[E]/" +
-                "Regresar al menú principal[R]/" +
-                "Regresar al menú anterior[B]: ")
-        actionKey = readLine()?.toUpperCase() ?: ""
+    private fun setRecipeTitle() {
+        var title = ""
+        do {
+            print("Dale un nombre a tu receta: ")
+            title = readLine()?.toUpperCase() ?: ""
+            recipe = Recipe(title)
+        } while (title.trim() == "")
     }
 
-    override fun executeAction() {
-        when(actionKey) {
-            "A" -> println("Agüita")
-            "L" -> println("Leche")
-            "C", "V", "F", "CE", "AC" -> {
-                val menuPanel:IngredientPanel = menuPanels[actionKey] ?: MeatPanel(Menu("Carnes"))
-                menuPanel.run()
-                recipe.ingredients.add(menuPanel.ingredient)
-            }
+    override fun display() {
+        do {
+            print("¿Deseas crear una nueva receta?[Si/No] ")
+            command = readLine()?.toUpperCase() ?: ""
+        } while (command != "S" && command != "N")
+
+        if (command == "S") {
+            setRecipeTitle()
+            do {
+                waitingForCommand()
+                executeCommand()
+            } while (command != "T")
         }
     }
 
-    override fun run() {
-        waitingForInstruction()
-        executeAction()
+    override fun waitingForCommand() {
+        do {
+            println(menu)
+            print("¿Qué deseas hacer? ")
+            command = readLine()?.toUpperCase() ?: ""
+        } while (!menu.options.contains(command))
+    }
+
+    override fun executeCommand() {
+        when(command) {
+            "1" -> {
+                catalog.display()
+                recipe?.ingredients?.add(catalog.requestIngredient())
+            }
+            "2" -> {
+                println("Captura las instrucciones de la receta:\n")
+                recipe?.instructions = readLine() ?: ""
+            }
+        }
     }
 }
