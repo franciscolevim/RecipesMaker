@@ -2,60 +2,43 @@ import model.Item
 import model.Menu
 import model.Recipe
 
-class RecipeBook(menu: Menu): RecipePanel(menu), IActions {
+class RecipeBook(menu:Menu): Panel(menu), ICommands {
+    val recipes = ArrayList<Recipe>()
+    override var command:String = ""
 
     init {
-        menu.items.put("1", Item("[C]rear Receta"))
-        menu.items.put("2", Item("[V]er Recetas"))
-        menu.items.put("3", Item("c[E]rrar RecipeBook"))
+        menu.items["1"] = Item("[C]rear Receta")
+        menu.items["2"] = Item("[V]er Recetas")
+        menu.items["3"] = Item("c[E]rrar RecipeBook")
+        menu.options.addAll(arrayListOf("C", "V", "E"))
+        panels["C"] = RecipeMaker(Menu("Crear Receta"))
+        panels["V"] = RecipeViewer(Menu("Ver Recetas"))
     }
 
-    override fun waitingForInstruction() {
-        waiting@ while (true) {
+    override fun display() {
+        do {
+            waitingForCommand()
+            executeCommand()
+        } while (command != "E")
+    }
+
+    override fun waitingForCommand() {
+        do {
             println(menu)
             print("¿Qué deseas hacer? ")
-            actionKey = readLine()?.toUpperCase() ?: ""
-            when(actionKey) {
-                "C","V","E" -> break@waiting;
-            }
-        }
+            command = readLine()?.toUpperCase() ?: ""
+        } while (!menu.options.contains(command))
     }
 
-    override fun executeAction() {
-        when(actionKey) {
-            "C" -> {
-                var option:String = ""
-                waiting@ while (true) {
-                    print("¿Deseas generar una nueva receta? [S]í/[N]o: ")
-                    option = readLine()?.toUpperCase() ?: ""
-                    when(option) {
-                        "S" -> {
-                            val maker = RecipeMaker(Menu("Nueva Receta"))
-                            maker.run()
-                            break@waiting
-                        }
-                        "N" -> {
-                            println("Nel pastel")
-                            break@waiting
-                        }
-                    }
-                }
-            }
-            "V" -> {
-                val viewer = RecipeViewer(Menu("Ver Recetas"))
-                viewer.run()
-                actionKey = viewer.getActionkey()
-            }
+    override fun executeCommand() {
+        val panel = panels[command]
+        if (panel is RecipeViewer) {
+            panel.recipes = recipes
         }
-        if ("E" == actionKey) {
-            println("Exit")
-        }
-    }
+        panel?.display()
 
-    override fun run() {
-        do {
-            waitingForInstruction()
-            executeAction()
-        } while(actionKey != "E")
+        if (panel is RecipeMaker) {
+            recipes.add(panel.recipe ?: Recipe("Nueva Receta"))
+        }
     }
 }
